@@ -82,7 +82,7 @@ def download(session):
     # Здесь замечание не понял... "download" присутствует
     # в строке ниже в виде "download.html", но далее в 100-й строке
     # ... BASE_DIR / "downloads" это уже немного другое слово
-    # Об этом идет речь? 
+    # Об этом идет речь?
     downloads_url = urljoin(MAIN_DOC_URL, "download.html")
 
     response = get_response(session, downloads_url)
