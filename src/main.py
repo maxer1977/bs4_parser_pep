@@ -7,13 +7,13 @@ from bs4 import BeautifulSoup
 from tqdm import tqdm
 
 from configs import configure_argument_parser, configure_logging
-from constants import BASE_DIR, EXPECTED_STATUS, MAIN_DOC_URL, PEP_DOC_URL
+from constants import BASE_DIR, EXPECTED_STATUS, MAIN_DOC_URL, PEP_DOC_URL, WHATS_NEW, LATEST_VERSIONS, PATTERN, PEP
 from outputs import control_output
 from utils import find_tag, get_response
 
 
 def whats_new(session):
-    results = [('Ссылка на статью', 'Заголовок', 'Редактор, Автор')]
+    results = [WHATS_NEW]
 
     whats_new_url = urljoin(MAIN_DOC_URL, "whatsnew/")
 
@@ -47,7 +47,7 @@ def whats_new(session):
 
 
 def latest_versions(session):
-    results = [('Ссылка на документацию', 'Версия', 'Статус')]
+    results = [LATEST_VERSIONS]
     response = get_response(session, MAIN_DOC_URL)
     if response is None:
         return
@@ -57,18 +57,13 @@ def latest_versions(session):
     ul_tags = sidebar.find_all("ul")
 
     for ul in ul_tags:
-        if "All versions" in ul.text:
-            a_tags = ul.find_all("a")
-            break
-        else:
-            raise Exception("Ничего не нашлось")
-
-    # Шаблон для поиска версии и статуса:
-    pattern = r"Python (?P<version>\d\.\d+) \((?P<status>.*)\)"
+        if 'All versions' not in ul.text:
+            raise Exception('Ничего не нашлось')
+        a_tags = ul.find_all("a")
 
     for a_tag in a_tags:
         link = a_tag["href"]
-        text_match = re.search(pattern, a_tag.text)
+        text_match = re.search(PATTERN, a_tag.text)
 
         if text_match is not None:
             version = text_match.group("version")
@@ -83,6 +78,10 @@ def latest_versions(session):
 
 
 def download(session):
+    # Здесь замечание не понял... "download" присутствует
+    # в строке ниже в виде "download.html", но далее в 100-й строке
+    # ... BASE_DIR / "downloads" это уже немного другое слово
+    # Об этом идет речь?
     downloads_url = urljoin(MAIN_DOC_URL, "download.html")
 
     response = get_response(session, downloads_url)
@@ -112,7 +111,7 @@ def download(session):
 
 def pep(session):
 
-    output = [['Статус', 'Количество']]
+    output = [PEP]
 
     response = get_response(session, PEP_DOC_URL)
     if response is None:
