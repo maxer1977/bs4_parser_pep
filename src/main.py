@@ -7,8 +7,9 @@ from bs4 import BeautifulSoup
 from tqdm import tqdm
 
 from configs import configure_argument_parser, configure_logging
-from constants import (BASE_DIR, EXPECTED_STATUS, LATEST_VERSIONS,
-                       MAIN_DOC_URL, PATTERN, PEP, PEP_DOC_URL, WHATS_NEW)
+from constants import (BASE_DIR, DIR_NAME, EXPECTED_STATUS, HTML_NAME,
+                       LATEST_VERSIONS, MAIN_DOC_URL, PATTERN, PEP,
+                       PEP_DOC_URL, WHATS_NEW)
 from outputs import control_output
 from utils import find_tag, get_response
 
@@ -79,11 +80,7 @@ def latest_versions(session):
 
 
 def download(session):
-    # Здесь замечание не понял... "download" присутствует
-    # в строке ниже в виде "download.html", но далее в 100-й строке
-    # ... BASE_DIR / "downloads" это уже немного другое слово
-    # Об этом идет речь?
-    downloads_url = urljoin(MAIN_DOC_URL, "download.html")
+    downloads_url = urljoin(MAIN_DOC_URL, HTML_NAME)
 
     response = get_response(session, downloads_url)
     if response is None:
@@ -98,7 +95,7 @@ def download(session):
 
     filename = archive_url.split("/")[-1]
 
-    downloads_dir = BASE_DIR / "downloads"
+    downloads_dir = BASE_DIR / DIR_NAME
     downloads_dir.mkdir(exist_ok=True)
 
     archive_path = downloads_dir / filename
